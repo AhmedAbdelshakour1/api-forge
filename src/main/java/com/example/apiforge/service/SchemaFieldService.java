@@ -6,6 +6,7 @@ import com.example.apiforge.entity.EntitySchema;
 import com.example.apiforge.entity.SchemaField;
 import com.example.apiforge.repository.EntitySchemaRepository;
 import com.example.apiforge.repository.SchemaFieldRepository;
+import com.example.apiforge.validator.SchemaFieldValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,13 +15,18 @@ import java.util.List;
 public class SchemaFieldService {
     private final SchemaFieldRepository schemaFieldRepository;
     private final EntitySchemaRepository entitySchemaRepository;
+    private final SchemaFieldValidator schemaFieldValidator;
 
-    public SchemaFieldService(SchemaFieldRepository schemaFieldRepository, EntitySchemaRepository entitySchemaRepository) {
+    public SchemaFieldService(SchemaFieldRepository schemaFieldRepository,
+                              EntitySchemaRepository entitySchemaRepository,
+                              SchemaFieldValidator schemaFieldValidator) {
         this.schemaFieldRepository = schemaFieldRepository;
         this.entitySchemaRepository = entitySchemaRepository;
+        this.schemaFieldValidator = schemaFieldValidator;
     }
 
     public SchemaFieldResponseDto createSchemaField(SchemaFieldRequestDto requestDto) {
+        schemaFieldValidator.validate(requestDto);
         EntitySchema entitySchema = entitySchemaRepository.findById(requestDto.getSchemaId())
                 .orElseThrow(() -> new IllegalArgumentException("Schema not found"));
 
@@ -42,6 +48,7 @@ public class SchemaFieldService {
     }
 
     public SchemaFieldResponseDto updateField(Long fieldId, SchemaFieldRequestDto requestDto) {
+        schemaFieldValidator.validate(requestDto);
         SchemaField field = schemaFieldRepository.findById(fieldId)
                 .orElseThrow(() -> new IllegalArgumentException("Field not found"));
 
