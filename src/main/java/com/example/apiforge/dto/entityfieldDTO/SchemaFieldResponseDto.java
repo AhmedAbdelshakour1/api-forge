@@ -6,8 +6,8 @@ public class SchemaFieldResponseDto {
     private Long id;
     private String fieldName;
     private String fieldType;
-    private boolean required;
-    private boolean array;
+    private boolean isRequired;
+    private boolean isArray;
     private Integer minValue;
     private Integer maxValue;
     private Integer minLength;
@@ -42,19 +42,19 @@ public class SchemaFieldResponseDto {
     }
 
     public boolean isRequired() {
-        return required;
+        return isRequired;
     }
 
     public void setRequired(boolean required) {
-        this.required = required;
+        isRequired = required;
     }
 
     public boolean isArray() {
-        return array;
+        return isArray;
     }
 
     public void setArray(boolean array) {
-        this.array = array;
+        isArray = array;
     }
 
     public Integer getMinValue() {

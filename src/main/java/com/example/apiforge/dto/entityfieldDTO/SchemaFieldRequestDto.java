@@ -10,8 +10,8 @@ public class SchemaFieldRequestDto {
     @NotNull(message = "Field type is required")
     private String fieldType;
 
-    private boolean required;
-    private boolean array;
+    private boolean isRequired;
+    private boolean isArray;
     private Integer minValue;
     private Integer maxValue;
     private Integer minLength;
@@ -36,20 +36,20 @@ public class SchemaFieldRequestDto {
         this.fieldType = fieldType;
     }
 
-    public boolean isRequired() {
-        return required;
-    }
-
-    public void setRequired(boolean required) {
-        this.required = required;
-    }
-
     public boolean isArray() {
-        return array;
+        return isArray;
     }
 
     public void setArray(boolean array) {
-        this.array = array;
+        isArray = array;
+    }
+
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    public void setRequired(boolean required) {
+        isRequired = required;
     }
 
     public Integer getMinValue() {
