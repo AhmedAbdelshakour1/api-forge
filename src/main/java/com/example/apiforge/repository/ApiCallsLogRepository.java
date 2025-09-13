@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface ApiCallsLogRepository extends JpaRepository<ApiCallsLog, Long> {
-    List<ApiCallsLog> findByEndpointId(Long endpointId);
-    List<ApiCallsLog> findByEndpointIdAndCalledAtBetween(Long endpointId, LocalDateTime start, LocalDateTime end);
+
 }
