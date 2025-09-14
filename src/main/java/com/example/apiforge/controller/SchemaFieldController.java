@@ -29,13 +29,19 @@ public class SchemaFieldController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/id")
+    @GetMapping("/{id}")
+    public ResponseEntity<SchemaFieldResponseDto> getFieldById(@PathVariable Long id) {
+        SchemaFieldResponseDto responseDto = schemaFieldService.getFieldById(id);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/{id}")
     public ResponseEntity<SchemaFieldResponseDto> updateField(@PathVariable Long id, @RequestBody SchemaFieldRequestDto requestDto) {
         SchemaFieldResponseDto responseDto = schemaFieldService.updateField(id, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity<SchemaFieldResponseDto> deleteField(@PathVariable Long id) {
         schemaFieldService.deleteField(id);
         return ResponseEntity.noContent().build();

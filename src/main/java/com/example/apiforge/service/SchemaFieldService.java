@@ -47,6 +47,12 @@ public class SchemaFieldService {
         return fields.stream().map(this::convertToResponseDto).toList();
     }
 
+    public SchemaFieldResponseDto getFieldById(Long id) {
+        SchemaField field = schemaFieldRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Field not found"));
+        return convertToResponseDto(field);
+    }
+
     public SchemaFieldResponseDto updateField(Long fieldId, SchemaFieldRequestDto requestDto) {
         schemaFieldValidator.validate(requestDto);
         SchemaField field = schemaFieldRepository.findById(fieldId)
@@ -102,7 +108,7 @@ public class SchemaFieldService {
         SchemaFieldResponseDto responseDto = new SchemaFieldResponseDto();
         responseDto.setId(field.getId());
         responseDto.setFieldName(field.getFieldName());
-        responseDto.setFieldType(field.getFieldType().name());
+        responseDto.setFieldType(field.getFieldType().name().toLowerCase());
         responseDto.setRequired(field.getRequired());
         responseDto.setArray(field.getArray());
         responseDto.setMinValue(field.getMinValue());
@@ -114,4 +120,6 @@ public class SchemaFieldService {
         responseDto.setSchemaId(field.getEntitySchema().getId());
         return responseDto;
     }
+
+
 }
