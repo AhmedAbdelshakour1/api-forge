@@ -28,15 +28,54 @@ public class DataGeneratorService {
     }
 
     private Object generateValueForField(SchemaField field) {
+        if(field.getArray() == Boolean.TRUE){
+            return generateArray(field);
+        }
+
         return switch (field.getFieldType()) {
-            case STRING -> faker.lorem().word();
-            case NUMBER -> faker.number().numberBetween(0, 1000);
+            case STRING -> generateString(field);
+            case NUMBER -> generateNumber(field);
             case BOOLEAN -> faker.bool().bool();
             case DATE -> faker.date().birthday();
             case EMAIL -> faker.internet().emailAddress();
             case UUID -> faker.internet().uuid();
-            case ARRAY -> new Object[]{faker.lorem().word(), faker.lorem().word(), faker.lorem().word()};
-            case OBJECT -> Map.of("key", faker.lorem().word());
+            case OBJECT -> generateObject(field);
+            case ARRAY -> generateArray(field);
         };
+    }
+
+    private Object generateArray(SchemaField field) {
+        int size = faker.number().numberBetween(field.getMinLength(), field.getMaxLength());
+        List<Object> array = new ArrayList<>();
+        for(int i = 0; i < size; i++){
+            switch (field.getFieldType()) {
+                case STRING -> array.add(generateString(field));
+                case NUMBER -> array.add(generateNumber(field));
+                case BOOLEAN -> array.add(faker.bool().bool());
+                case DATE -> array.add(faker.date().birthday());
+                case EMAIL -> array.add(faker.internet().emailAddress());
+                case UUID -> array.add(faker.internet().uuid());
+                case OBJECT -> array.add(generateObject(field));
+            }
+        }
+        return array;
+    }
+
+    // TODO: Implement a more complex object generator based on nested schema fields
+    private Object generateObject(SchemaField field) {
+        return Map.of("sampleKey", "sampleValue");
+    }
+
+    private Object generateNumber(SchemaField field) {
+        int min = field.getMinValue() != null ? field.getMinValue() : 0;
+        int max = field.getMaxValue() != null ? field.getMaxValue() : 100;
+        return faker.number().numberBetween(min, max + 1);
+    }
+
+    private Object generateString(SchemaField field) {
+        int min = field.getMinLength() != null ? field.getMinLength() : 3;
+        int max = field.getMaxLength() != null ? field.getMaxLength() : 10;
+        int length = faker.number().numberBetween(min, max + 1);
+        return faker.name().username().substring(0, Math.min(length, 10));
     }
 }
