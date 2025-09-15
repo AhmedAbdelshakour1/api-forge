@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface ApiEndpointRepository extends JpaRepository<ApiEndpoint, Long> {
     List<ApiEndpoint> findByProjectId(Long projectId);
     Optional<ApiEndpoint> findByProjectIdAndPathAndHttpMethod(Long projectId, String path, String httpMethod);
-
+    Optional<ApiEndpoint> findByPathAndHttpMethod(String path, String httpMethod);
     List<ApiEndpoint> findByResponseSchemaId(Long schemaId);
     List<ApiEndpoint> findByRequestSchemaId(Long schemaId);
 }
