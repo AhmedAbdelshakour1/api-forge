@@ -73,8 +73,7 @@ public class ApiEndpoint {
 
     public enum ResponseType {
         SINGLE("single"),
-        ARRAY("array"),
-        PAGINATED("paginated");
+        ARRAY("array");
 
         private final String value;
         ResponseType(String value) {
