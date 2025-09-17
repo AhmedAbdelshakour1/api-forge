@@ -5,12 +5,16 @@ import com.example.apiforge.dto.apiendpointDTO.ApiEndpointResponseDto;
 import com.example.apiforge.entity.ApiEndpoint;
 import com.example.apiforge.entity.EntitySchema;
 import com.example.apiforge.entity.Project;
+import com.example.apiforge.entity.SchemaField;
 import com.example.apiforge.repository.ApiEndpointRepository;
 import com.example.apiforge.repository.EntitySchemaRepository;
 import com.example.apiforge.repository.ProjectRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 public class ApiEndpointService {
@@ -36,6 +40,37 @@ public class ApiEndpointService {
             return dataGeneratorService.generateOne(entitySchema);
         } else {
             return dataGeneratorService.generateMany(entitySchema, endpoint.getDefaultCount());
+        }
+    }
+
+    public Object handlePostRequest(String path, String body) {
+        ApiEndpoint endpoint = apiEndpointRepository.findByPathAndHttpMethod(path, ApiEndpoint.HttpMethod.POST)
+                .orElseThrow(() -> new IllegalArgumentException("Endpoint not found"));
+
+        if(endpoint.getRequestSchema() != null){
+            validateRequestBody(endpoint.getRequestSchema(), body);
+        }
+
+        EntitySchema entitySchema = endpoint.getResponseSchema();
+
+        if(endpoint.getResponseType() == ApiEndpoint.ResponseType.SINGLE){
+            return dataGeneratorService.generateOne(entitySchema);
+        } else {
+            return dataGeneratorService.generateMany(entitySchema, endpoint.getDefaultCount());
+        }
+    }
+
+    private void validateRequestBody(EntitySchema requestSchema, String body) {
+        try{
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> bodyMap = mapper.readValue(body, new TypeReference<>() {});
+            for(SchemaField field : requestSchema.getFields()){
+                if(field.getRequired() && !bodyMap.containsKey(field.getFieldName())){
+                    throw new IllegalArgumentException("Missing required field: " + field.getFieldName());
+                }
+            }
+        }catch (Exception e){
+            throw new RuntimeException("Invalid request body", e);
         }
     }
 
@@ -142,4 +177,6 @@ public class ApiEndpointService {
         dto.setUpdatedAt(apiEndpoint.getUpdatedAt());
         return dto;
     }
+
+
 }
