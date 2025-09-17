@@ -14,10 +14,11 @@ public class MockApiController {
         this.apiEndpointService = apiEndpointService;
     }
 
-    @GetMapping("/{path}")
-    public ResponseEntity<Object> handleGet(@PathVariable String path){
+    @GetMapping("/{entity}/{id}")
+    public ResponseEntity<Object> handleGet(@PathVariable String entity, @PathVariable String id){
         try {
-            Object response = apiEndpointService.handleGetRequest("/" + path);
+            String path = "/" + entity + "/" + id;
+            Object response = apiEndpointService.handleGetRequest(path);
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -36,10 +37,11 @@ public class MockApiController {
         }
     }
 
-    @PutMapping("/{path}")
-    public ResponseEntity<Object> handlePut(@PathVariable String path, @RequestBody String body) {
+    @PutMapping("/{entity}/{id}")
+    public ResponseEntity<Object> handlePut(@PathVariable String entity, @PathVariable String id, @RequestBody String body) {
         try {
-            Object response = apiEndpointService.handlePutRequest("/" + path, body);
+            String path = "/" + entity + "/" + id;
+            Object response = apiEndpointService.handlePutRequest(path, body);
             return ResponseEntity.ok(response);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -47,10 +49,11 @@ public class MockApiController {
         }
     }
 
-    @DeleteMapping("/{path}")
-    public ResponseEntity<Object> handleDelete(@PathVariable String path) {
+    @DeleteMapping("/{entity}/{id}")
+    public ResponseEntity<Object> handleDelete(@PathVariable String entity, @PathVariable String id){
         try{
-            apiEndpointService.handleDeleteRequest("/" + path);
+            String path = "/" + entity + "/" + id;
+            apiEndpointService.handleDeleteRequest(path);
             return ResponseEntity.noContent().build();
         }catch(RuntimeException ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
