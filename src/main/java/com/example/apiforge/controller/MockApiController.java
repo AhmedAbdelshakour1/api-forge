@@ -16,11 +16,23 @@ public class MockApiController {
 
     @GetMapping("/{path}")
     public ResponseEntity<Object> handleGet(@PathVariable String path){
-        return ResponseEntity.ok(apiEndpointService.handleGetRequest("/" + path));
+        try {
+            Object response = apiEndpointService.handleGetRequest("/" + path);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing request: " + ex.getMessage());
+        }
     }
 
     @PostMapping("/{path}")
     public ResponseEntity<Object> handlePost(@PathVariable String path, @RequestBody String body){
-        return ResponseEntity.status(HttpStatus.CREATED).body(apiEndpointService.handlePostRequest("/" + path, body));
+        try {
+            Object response = apiEndpointService.handlePostRequest("/" + path, body);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing request: " + ex.getMessage());
+        }
     }
 }
