@@ -34,6 +34,8 @@ public class ApiEndpointService {
         ApiEndpoint endpoint = apiEndpointRepository.findByPathAndHttpMethod(path, ApiEndpoint.HttpMethod.GET)
                 .orElseThrow(() -> new IllegalArgumentException("Endpoint not found"));
 
+        simulateDelayAndError(endpoint);
+
         EntitySchema entitySchema = endpoint.getResponseSchema();
 
         if(endpoint.getResponseType() == ApiEndpoint.ResponseType.SINGLE){
@@ -47,6 +49,8 @@ public class ApiEndpointService {
         ApiEndpoint endpoint = apiEndpointRepository.findByPathAndHttpMethod(path, ApiEndpoint.HttpMethod.POST)
                 .orElseThrow(() -> new IllegalArgumentException("Endpoint not found"));
 
+        simulateDelayAndError(endpoint);
+
         if(endpoint.getRequestSchema() != null){
             validateRequestBody(endpoint.getRequestSchema(), body);
         }
@@ -57,6 +61,23 @@ public class ApiEndpointService {
             return dataGeneratorService.generateOne(entitySchema);
         } else {
             return dataGeneratorService.generateMany(entitySchema, endpoint.getDefaultCount());
+        }
+    }
+
+    private void simulateDelayAndError(ApiEndpoint endpoint){
+        if(endpoint.getDelayMs() != null && endpoint.getDelayMs() > 0){
+            try {
+                Thread.sleep(endpoint.getDelayMs());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        if(endpoint.getErrorRate() != null && endpoint.getErrorRate().compareTo(BigDecimal.ZERO) > 0){
+            double randomValue = Math.random();
+            if(randomValue < endpoint.getErrorRate().doubleValue()){
+                throw new RuntimeException("Simulated error for testing purposes");
+            }
         }
     }
 
