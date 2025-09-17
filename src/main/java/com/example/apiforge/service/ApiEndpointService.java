@@ -64,6 +64,32 @@ public class ApiEndpointService {
         }
     }
 
+    public Object handlePutRequest(String path, String body) {
+        ApiEndpoint endpoint = apiEndpointRepository.findByPathAndHttpMethod(path, ApiEndpoint.HttpMethod.PUT)
+                .orElseThrow(() -> new IllegalArgumentException("Endpoint not found"));
+
+        simulateDelayAndError(endpoint);
+
+        if(endpoint.getRequestSchema() != null){
+            validateRequestBody(endpoint.getRequestSchema(), body);
+        }
+
+        EntitySchema entitySchema = endpoint.getResponseSchema();
+
+        if(endpoint.getResponseType() == ApiEndpoint.ResponseType.SINGLE){
+            return dataGeneratorService.generateOne(entitySchema);
+        } else {
+            return dataGeneratorService.generateMany(entitySchema, endpoint.getDefaultCount());
+        }
+    }
+
+    public void handleDeleteRequest(String path) {
+        ApiEndpoint endpoint = apiEndpointRepository.findByPathAndHttpMethod(path, ApiEndpoint.HttpMethod.DELETE)
+                .orElseThrow(() -> new IllegalArgumentException("Endpoint not found"));
+
+        simulateDelayAndError(endpoint);
+    }
+
     private void simulateDelayAndError(ApiEndpoint endpoint){
         if(endpoint.getDelayMs() != null && endpoint.getDelayMs() > 0){
             try {

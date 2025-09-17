@@ -35,4 +35,26 @@ public class MockApiController {
                     .body("Error processing request: " + ex.getMessage());
         }
     }
+
+    @PutMapping("/{path}")
+    public ResponseEntity<Object> handlePut(@PathVariable String path, @RequestBody String body) {
+        try {
+            Object response = apiEndpointService.handlePutRequest("/" + path, body);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing request: " + ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{path}")
+    public ResponseEntity<Object> handleDelete(@PathVariable String path) {
+        try{
+            apiEndpointService.handleDeleteRequest("/" + path);
+            return ResponseEntity.noContent().build();
+        }catch(RuntimeException ex){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error processing request: " + ex.getMessage());
+        }
+    }
 }
